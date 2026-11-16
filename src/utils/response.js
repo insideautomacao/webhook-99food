@@ -1,4 +1,26 @@
-import { ErrorCodes, ErrorMessages } from "./errors";
+import { ErrorCodes, ErrorMessages, newErrorId } from "./errors";
+
+export function errorResponse(status, code, message, id) {
+    const errorId = id || newErrorId();
+    const errorMessage =
+        message ||
+        ErrorMessages[code] ||
+        "Não foi possível processar a operação";
+
+    const body = {
+        id: errorId,
+        code,
+        message: errorMessage,
+        success: false,
+    };
+
+    return Response.json(body, {
+        status,
+        headers: {
+            "Content-Type": "application/json; charset=utf-8",
+        },
+    });
+}
 
 export function jsonResponse(data, status = 200, headers = {}) {
     return Response.json(data, {
@@ -17,33 +39,31 @@ export function webhookSuccessResponse() {
     }, 200);
 }
 
-export function webhookErrorResponse(
-    status = 400,
-    errmsg = "err text",
-    errno = 1,
+export function notFoundResponse(
+    message = ErrorMessages.NOT_FOUND,
+    code = ErrorCodes.NOT_FOUND,
 ) {
-    return jsonResponse(
-        {
-            errno,
-            errmsg,
-        },
-        status,
-    );
+    return errorResponse(404, code, message);
 }
 
-export function notFoundResponse(message = ErrorMessages.NOT_FOUND) {
-    return webhookErrorResponse(404, message, 1);
+export function badRequestResponse(
+    message = ErrorMessages.INVALID_REQUEST,
+    code = ErrorCodes.INVALID_REQUEST,
+) {
+    return errorResponse(400, code, message);
 }
 
-export function badRequestResponse(message = ErrorMessages.INVALID_REQUEST) {
-    return webhookErrorResponse(400, message, 1);
-}
-
-export function unauthorizedResponse(message = ErrorMessages.INVALID_SIGNATURE) {
-    return webhookErrorResponse(401, message, 1);
+export function unauthorizedResponse(
+    message = ErrorMessages.INVALID_SIGNATURE,
+    code = ErrorCodes.INVALID_SIGNATURE,
+) {
+    return errorResponse(401, code, message);
 }
 
 export function internalErrorResponse(err) {
-    const msg = err?.message || ErrorMessages.INTERNAL_ERROR;
-    return webhookErrorResponse(500, msg, 1);
+    return errorResponse(
+        500,
+        ErrorCodes.INTERNAL_ERROR,
+        ErrorMessages.INTERNAL_ERROR,
+    );
 }

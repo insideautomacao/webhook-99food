@@ -93,7 +93,9 @@ describe("WebhookHandler (99Food)", () => {
         const resp1 = await handleRoutes(invalidReq);
         expect(resp1.status).toBe(401);
         const resp1Json = await resp1.json();
-        expect(resp1Json.errno).toBe(1);
+        expect(resp1Json.id).toStartWith("err_");
+        expect(resp1Json.code).toBe("INVALID_SIGNATURE");
+        expect(resp1Json.success).toBe(false);
 
         // 2. Requisicao valida de orderNew com IDs int64
         const orderNewBody = JSON.stringify({
