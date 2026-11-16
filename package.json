@@ -1,0 +1,22 @@
+{
+  "name": "webhook-99",
+  "version": "1.0.0",
+  "module": "src/index.js",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "bun --watch src/index.js",
+    "start": "bun src/index.js",
+    "build:proxy": "cargo build --release --manifest-path rust-proxy/Cargo.toml",
+    "test": "bun test tests"
+  },
+  "dependencies": {
+    "ioredis": "^5.4.1",
+    "json-bigint": "^1.0.0",
+    "nodemailer": "^6.9.15",
+    "ulid": "^3.0.2"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  }
+}
